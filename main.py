@@ -11,13 +11,13 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "Welcome to face verification API"}
 
 
-@app.get("/verifyface")
-def verify_face():
+@app.get("/verifyface/")
+def verify_face(image_1: str, image_2: str):
     req = urllib.request.urlopen(
-        'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F20%2F2022%2F04%2F19%2Fcristiano-ronaldo-1.jpg&q=60')
+        image_1)
     arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
     img = cv2.imdecode(arr, -1)  # 'Load it as it is'
 
@@ -26,7 +26,7 @@ def verify_face():
     img_encoding = face_recognition.face_encodings(rgb_img)[0]
 
     req2 = urllib.request.urlopen(
-        'https://i2-prod.mirror.co.uk/incoming/article26777809.ece/ALTERNATES/s1200c/0_GettyImages-1240041916-1.jpg')
+        image_2)
     arr2 = np.asarray(bytearray(req2.read()), dtype=np.uint8)
     img2 = cv2.imdecode(arr2, -1)  # 'Load it as it is'
 
@@ -36,12 +36,12 @@ def verify_face():
 
     result = face_recognition.compare_faces([img_encoding], img_encoding2)
     print("Result: ", result)
-    return {"Hello": "World", 'verification': str(result)}
+    return {"Info": "FaceVerification Data", 'verification': str(result)}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+# @app.get("/items/{item_id}")
+# def read_item(item_id: int, q: Union[str, None] = None):
+#     return {"item_id": item_id, "q": q}
 
 
 
