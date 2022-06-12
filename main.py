@@ -5,6 +5,7 @@ import cv2
 import face_recognition
 import urllib.request
 import numpy as np
+from skimage import io
 
 app = FastAPI()
 
@@ -16,23 +17,22 @@ def read_root():
 
 @app.get("/verifyface/")
 def verify_face(image_1: str, image_2: str):
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19'
-    req = urllib.request.urlopen(
-        image_1, headers={'User-Agent': user_agent})
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
+    req = urllib.request.urlopen(image_1)
     arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
     img = cv2.imdecode(arr, -1)  # 'Load it as it is'
-
+    im1 = io.imread(image_1)
     # img = cv2.imread("Messi1.webp")
-    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    rgb_img = cv2.cvtColor(im1, cv2.COLOR_BGR2RGB)
     img_encoding = face_recognition.face_encodings(rgb_img)[0]
 
-    req2 = urllib.request.urlopen(
-        image_2, headers={'User-Agent': user_agent})
+    req2 = urllib.request.urlopen(image_2)
     arr2 = np.asarray(bytearray(req2.read()), dtype=np.uint8)
     img2 = cv2.imdecode(arr2, -1)  # 'Load it as it is'
-
+    
+    im2 = io.imread(image_2)
     # img2 = cv2.imread("images/Jeff Bezoz.jpg")
-    rgb_img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+    rgb_img2 = cv2.cvtColor(im2, cv2.COLOR_BGR2RGB)
     img_encoding2 = face_recognition.face_encodings(rgb_img2)[0]
 
     result = face_recognition.compare_faces([img_encoding], img_encoding2)
